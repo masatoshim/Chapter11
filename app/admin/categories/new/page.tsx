@@ -39,8 +39,7 @@ export default function CategoryCreatePage() {
 
       <CategoryForm 
         mode="create"
-        name={name}
-        setName={setName}
+        defaultValues={{ name: name }}
         onSubmit={handleCreate}
         isLoading={isCreating}
       />

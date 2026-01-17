@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { deleteAdminPost } from '@/app/admin/_libs/admin-post-api';
 import { useSupabaseSession } from '@/app/_hooks';
+import { useSWRConfig } from 'swr';
 
 export const useDeletePost = (id: string) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = useSupabaseSession();
-  
+  const { mutate } = useSWRConfig();
+
   const deletePost = async () => {
     if (!token) {
       const message = 'Authentication failed.';
@@ -17,6 +19,8 @@ export const useDeletePost = (id: string) => {
     setError(null);
     try {
       await deleteAdminPost(id, token);
+      // キャッシュを再取得
+      mutate([token]); 
       return { success: true };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'NG';

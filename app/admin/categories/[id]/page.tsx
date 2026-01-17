@@ -69,8 +69,7 @@ export default function CategoryEditPage() {
 
       <CategoryForm 
         mode="edit"
-        name={name}
-        setName={setName}
+        defaultValues={{ name: name }}
         onSubmit={handleUpdate}
         onDelete={handleDelete}
         isLoading={isUpdating}

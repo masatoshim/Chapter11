@@ -7,7 +7,6 @@ import { useGetPosts } from '@/app/admin/_hooks';
 export default function AdminPostListPage() {
   const { posts, fetched, error } = useGetPosts();
 
-  // 1. ローディング・エラー状態のハンドリング
   if (!fetched) return <div className={classes.loading}>読み込み中...</div>;
   if (error) return <div className={classes.error}>Error: {error}</div>;
 
