@@ -1,9 +1,13 @@
 "use client";
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, ChangeEvent } from 'react';
+import Image from 'next/image';
 import classes from '@/app/admin/_styles/AdminEdit.module.scss';
 import { useRouter } from 'next/navigation';
 import { useGetCategories } from '@/app/admin/_hooks';
+import { useGetThumbnailImageUrl } from '@/app/_hooks';
+import { supabase } from '@/app/_libs/supabase'; 
+import { v4 as uuidv4 } from 'uuid';
 
 interface PostFormProps {
   mode: 'create' | 'edit';
@@ -11,8 +15,8 @@ interface PostFormProps {
   setTitle: (v: string) => void;
   content: string;
   setContent: (v: string) => void;
-  thumbnailUrl: string;
-  setThumbnailUrl: (v: string) => void;
+  thumbnailImageKey: string;
+  setThumbnailImageKey: (v: string) => void;
   selectedCategoryIds: number[];
   toggleCategory: (id: number) => void;
   onSubmit: () => void;
@@ -41,6 +45,34 @@ export const PostForm = (props: PostFormProps) => {
     .filter((c) => props.selectedCategoryIds.includes(c.id))
     .map((c) => c.name)
     .join(', ');
+  
+  //const [thumbnailImageKey, setThumbnailImageKey] = useState('');
+  const handleImageChange = async (
+    event: ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    if (!event.target.files || event.target.files.length == 0) {
+      // 画像が選択されていないのでreturn
+      return
+    }
+    const file = event.target.files[0] // 選択された画像を取得
+    const filePath = `private/${uuidv4()}` // ファイルパスを指定
+    // Supabaseに画像をアップロード
+    const { data, error } = await supabase.storage
+      .from('post_thumbnail') // ここでバケット名を指定
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      })
+    // アップロードに失敗したらエラーを表示して終了
+    if (error) {
+      alert(error.message)
+      return
+    }
+    // data.pathに、画像固有のkeyが入っているので、thumbnailImageKeyに格納する
+    props.setThumbnailImageKey(data.path)
+  }
+
+  const { thumbnailImageUrl } = useGetThumbnailImageUrl(props.thumbnailImageKey);
 
   return (
     <form className={classes.form} onSubmit={(e) => e.preventDefault()}>
@@ -57,12 +89,12 @@ export const PostForm = (props: PostFormProps) => {
 
         <div className={classes.field}>
           <label>サムネイルURL</label>
-          <input 
-            type="text" 
-            placeholder="https://example.com/image.jpg"
-            value={props.thumbnailUrl} 
-            onChange={(e) => props.setThumbnailUrl(e.target.value)} 
-          />
+          <input type="file" id="thumbnailImageKey" onChange={handleImageChange} accept="image/*" />
+          {thumbnailImageUrl && (
+            <div className="mt-2">
+              <Image src={thumbnailImageUrl} alt="thumbnail" width={400} height={400} />
+            </div>
+          )}
         </div>
 
         <div className={classes.field}>

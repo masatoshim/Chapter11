@@ -15,7 +15,7 @@ export default function AdminEditPage() {
   // 入力値管理用フック
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [thumbnailImageKey, setThumbnailImageKey] = useState('');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   // 記事情報操作用フック
   const { post, fetched: postFetched, error: postError } = useGetPost(id);
@@ -27,7 +27,7 @@ export default function AdminEditPage() {
     if (post) {
       setTitle(post.title);
       setContent(post.content);
-      setThumbnailUrl(post.thumbnailUrl);
+      setThumbnailImageKey(post.thumbnailImageKey);
       setSelectedCategoryIds(post.postCategories.map((pc) => pc.category.id));
     }
   }, [post]);
@@ -50,7 +50,7 @@ export default function AdminEditPage() {
     const result = await updatePost({
       title,
       content,
-      thumbnailUrl,
+      thumbnailImageKey,
       categoryIds: selectedCategoryIds,
     });
     if (result.success) {
@@ -103,8 +103,8 @@ export default function AdminEditPage() {
         setTitle={setTitle}
         content={content}
         setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
+        thumbnailImageKey={thumbnailImageKey}
+        setThumbnailImageKey={setThumbnailImageKey}
         selectedCategoryIds={selectedCategoryIds}
         toggleCategory={toggleCategory}
         onSubmit={handleUpdate}

@@ -3,11 +3,12 @@
 import classes from '@/app/_styles/Detail.module.scss'
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { usePost } from '@/app/_hooks';
+import { usePost, useGetThumbnailImageUrl } from '@/app/_hooks';
 
 export default function DetailPage() {
   const { id } = useParams<{ id: string }>();
   const { post, fetched, error } = usePost(id);
+  const { thumbnailImageUrl } = useGetThumbnailImageUrl(post?.thumbnailImageKey);
 
   if (!fetched) return <div>読み込み中...</div>;
   if (!post) return <div>記事が見つかりません</div>;
@@ -16,7 +17,7 @@ export default function DetailPage() {
   return (
     <div className={classes.container}>
       <div className={classes.post}>
-        <div className={classes.postImage}><Image src={ post.thumbnailUrl } alt="" fill /></div>
+        <div className={classes.postImage}>{ thumbnailImageUrl && (<Image src={ thumbnailImageUrl } alt="" fill />)}</div>
         <div className={classes.postContent}>
           <div className={classes.postInfo}>
             <div className={classes.postDate}>{ new Date(post.createdAt).toLocaleDateString('ja-JP') }</div>

@@ -5,15 +5,16 @@ import Link from 'next/link'
 import React from 'react'
 import { useSupabaseSession } from '@/app/_hooks'
 import { supabase } from '../_libs/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 
 export const Header: React.FC = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
-    await router.replace('/')
+    await router.replace('/sign_in')
   }
 
   const { session, isLoading } = useSupabaseSession()
@@ -27,7 +28,7 @@ export const Header: React.FC = () => {
         <div className="flex items-center gap-4">
           {session ? (
             <>
-              <Link href="/admin" className="header-link">
+              <Link href="/admin/posts" className="header-link">
                 管理画面
               </Link>
               <button onClick={handleLogout}>ログアウト</button>
@@ -37,9 +38,11 @@ export const Header: React.FC = () => {
               <Link href="/contact" className="header-link">
                 お問い合わせ
               </Link>
-              <Link href="/sign_in" className="header-link">
-                ログイン
-              </Link>
+              {pathname !== "/sign_in" && (
+                <Link href="/sign_in" className="header-link">
+                  ログイン
+                </Link>
+              )}
             </>
           )}
         </div>

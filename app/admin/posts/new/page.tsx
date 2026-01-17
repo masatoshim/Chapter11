@@ -14,7 +14,7 @@ export default function AdminCreatePage() {
   // 記事情報操作用フック
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [thumbnailImageKey, setThumbnailImageKey] = useState('');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   const { createPost, isCreating } = useCreatePost();
 
@@ -34,7 +34,7 @@ export default function AdminCreatePage() {
     const result = await createPost({
       title,
       content,
-      thumbnailUrl,
+      thumbnailImageKey,
       categoryIds: selectedCategoryIds,
     });
     if (result.success) {
@@ -63,8 +63,8 @@ export default function AdminCreatePage() {
         setTitle={setTitle}
         content={content}
         setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
+        thumbnailImageKey={thumbnailImageKey}
+        setThumbnailImageKey={setThumbnailImageKey}
         selectedCategoryIds={selectedCategoryIds}
         toggleCategory={toggleCategory}
         onSubmit={handleCreate}

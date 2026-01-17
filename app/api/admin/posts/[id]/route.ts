@@ -52,13 +52,13 @@ export const PUT = async (
     const { id: idStr } = await params;
     const id = Number(idStr);
     const body = await request.json()
-    const { title, content, thumbnailUrl, categoryIds }: PostMutationPayload = body
+    const { title, content, thumbnailImageKey, categoryIds }: PostMutationPayload = body
     const post = await prisma.post.update({
       where: { id },
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
         postCategories: {
           // 既存の関連を一度すべて削除して作り直す
           deleteMany: {}, 

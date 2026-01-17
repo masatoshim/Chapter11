@@ -41,12 +41,12 @@ export const POST = async (request: Request) => {
 
   try {
     const body: PostMutationPayload  = await request.json()
-    const { title, content, thumbnailUrl, categoryIds } = body
+    const { title, content, thumbnailImageKey, categoryIds } = body
     const post = await prisma.post.create({
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
         postCategories: {
           create: categoryIds.map((id: number) => ({
             categoryId: id,
