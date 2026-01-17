@@ -1,9 +1,15 @@
 import { prisma } from '@/app/_libs/prisma'
-import { NextResponse } from 'next/server'
+import { supabase } from '@/app/_libs/supabase'
+import { NextRequest, NextResponse } from 'next/server'
 import { CategoriesIndexResponse, CategoryMutationPayload, CreateCategoryResponse } from '@/app/_types'
 
 // カテゴリー一覧取得
-export const GET = async () => {
+export const GET = async (request: NextRequest) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     const categories = await prisma.category.findMany({
       orderBy: {
@@ -19,6 +25,11 @@ export const GET = async () => {
 
 // カテゴリー登録
 export const POST = async (request: Request) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     const body: CategoryMutationPayload = await request.json()
     const { name } = body

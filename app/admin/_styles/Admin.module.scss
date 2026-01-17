@@ -41,6 +41,12 @@ width: 240px;
             background-color: #34495e;
           }
         }
+
+        &.active {
+          background-color: #e0efff; // 選択中（isSelectedがtrueの時）
+          color: #0070f3;
+          font-weight: bold;
+        }
       }
     }
   }

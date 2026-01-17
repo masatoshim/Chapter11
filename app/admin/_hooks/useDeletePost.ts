@@ -1,15 +1,22 @@
 import { useState } from 'react';
 import { deleteAdminPost } from '@/app/admin/_libs/admin-post-api';
+import { useSupabaseSession } from '@/app/_hooks';
 
 export const useDeletePost = (id: string) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const { token } = useSupabaseSession();
+  
   const deletePost = async () => {
+    if (!token) {
+      const message = 'Authentication failed.';
+      setError(message);
+      return { success: false, error: message }; 
+    }
     setIsDeleting(true);
     setError(null);
     try {
-      await deleteAdminPost(id);
+      await deleteAdminPost(id, token);
       return { success: true };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'NG';

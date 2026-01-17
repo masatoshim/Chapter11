@@ -1,9 +1,15 @@
 import { prisma } from '@/app/_libs/prisma'
-import { NextResponse } from 'next/server'
+import { supabase } from '@/app/_libs/supabase'
+import { NextRequest, NextResponse } from 'next/server'
 import { PostsIndexResponse, PostMutationPayload, CreatePostResponse } from '@/app/_types'
 
 // 記事一覧取得
-export const GET = async () => {
+export const GET = async (request: NextRequest) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     const posts = await prisma.post.findMany({
       include: {
@@ -28,6 +34,11 @@ export const GET = async () => {
 
 // 記事登録
 export const POST = async (request: Request) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     const body: PostMutationPayload  = await request.json()
     const { title, content, thumbnailUrl, categoryIds } = body

@@ -1,12 +1,18 @@
 import { prisma } from '@/app/_libs/prisma'
+import { supabase } from '@/app/_libs/supabase'
 import { NextResponse } from 'next/server'
 import { CategoryIndexResponse, CategoryMutationPayload } from '@/app/_types'
 
 // カテゴリー取得
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     const { id: idStr } = await params;
     const id = Number(idStr);
@@ -29,6 +35,11 @@ export const PUT = async (
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     const { id: idStr } = await params;
     const id = Number(idStr);
@@ -53,9 +64,14 @@ export const PUT = async (
 
 // カテゴリー削除
 export const DELETE = async (
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     const { id: idStr } = await params;
     const id = Number(idStr);
