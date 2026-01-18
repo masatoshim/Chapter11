@@ -14,8 +14,8 @@ width: 240px;
   /* 固定の設定 */
   position: sticky; 
   top: 70px;
-  height: calc(100vh - 112px);
-  max-height: calc(100vh - 112px);
+  height: calc(100vh - 70px);
+  max-height: calc(100vh - 70px);
   
   /* サイドバー内の項目が増えた場合のみサイドバー内をスクロールさせる */
   overflow-y: auto;
@@ -40,6 +40,12 @@ width: 240px;
           &:hover {
             background-color: #34495e;
           }
+        }
+
+        &.active {
+          background-color: #e0efff; // 選択中（isSelectedがtrueの時）
+          color: #0070f3;
+          font-weight: bold;
         }
       }
     }

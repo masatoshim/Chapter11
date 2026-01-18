@@ -14,7 +14,7 @@ export interface Post {
   id: number;
   title: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   createdAt: Date;
   updatedAt: Date;
   postCategories: PostCategoryRelation[];
@@ -51,6 +51,6 @@ export interface PostUpdateResponse {
 export interface PostMutationPayload {
   title: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   categoryIds: number[];
 }

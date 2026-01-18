@@ -9,15 +9,13 @@ import { useCreateCategory } from '@/app/admin/_hooks';
 export default function CategoryCreatePage() {
   // 画面表示用フック
   const router = useRouter();
-  const [name, setName] = useState('');
   const [showToast, setShowToast] = useState(false);
-  // カテゴリー操作用フック
+  // カテゴリー情報操作用フック
   const { createCategory, isCreating } = useCreateCategory();
 
   // 登録処理
-  const handleCreate = async () => {
-    if (!name.trim()) return alert("カテゴリー名を入力してください");
-    const result = await createCategory({ name });
+  const handleCreate = async (data: { name: string }) => {
+    const result = await createCategory(data);
     if (result.success) {
       setShowToast(true);
       setTimeout(() => {
@@ -39,8 +37,7 @@ export default function CategoryCreatePage() {
 
       <CategoryForm 
         mode="create"
-        name={name}
-        setName={setName}
+        defaultValues={{ name: "" }}
         onSubmit={handleCreate}
         isLoading={isCreating}
       />

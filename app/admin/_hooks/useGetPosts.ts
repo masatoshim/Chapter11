@@ -1,18 +1,20 @@
-import { useState, useEffect } from 'react';
-import { PostsIndexResponse } from '@/app/_types'
+import useSWR from 'swr';
+import { PostsIndexResponse } from '@/app/_types';
 import { fetchAdminPosts } from "@/app/admin/_libs/admin-post-api";
+import { useSupabaseSession } from '@/app/_hooks';
 
 export const useGetPosts = () => {
-  const [posts, setPosts] = useState<PostsIndexResponse['posts']>([]);;
-  const [fetched, setFetched] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  const { token } = useSupabaseSession();
 
-  useEffect(() => {
-    setFetched(false);
-    fetchAdminPosts()
-      .then(result => setPosts(result.posts))
-      .catch(err => setError(err.message))
-      .finally(() => setFetched(true));
-  }, []);
-  return { posts, fetched, error }
-}
+  const { data, error, isLoading, mutate } = useSWR<PostsIndexResponse>(
+    token ? ['admin-posts', token] : null,
+    ([_, token]: [string, string]) => fetchAdminPosts(token)
+  );
+
+  return {
+    posts: data?.posts ?? [],
+    fetched: !isLoading,
+    error: error?.message ?? '',
+    mutate,
+  };
+};

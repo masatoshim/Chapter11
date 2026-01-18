@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import classes from '@/app/admin/_styles/AdminEdit.module.scss';
 import { PostForm } from '@/app/admin/_components/PostForm';
 import { useParams, useRouter } from 'next/navigation';
 import { useGetPost, useUpdatePost, useDeletePost } from '@/app/admin/_hooks';
+import { PostMutationPayload } from '@/app/_types';
 
 export default function AdminEditPage() {
   // 画面表示用フック
@@ -12,51 +13,20 @@ export default function AdminEditPage() {
   const router = useRouter();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  // 入力値管理用フック
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   // 記事情報操作用フック
-  const { post, fetched: postFetched, error: postError } = useGetPost(id);
+  const { post, fetched: postFetched, error: postError, mutate } = useGetPost(id);
   const { updatePost, isUpdating } = useUpdatePost(id);
   const { deletePost } = useDeletePost(id);
 
-  // 初期値セット
-  useEffect(() => {
-    if (post) {
-      setTitle(post.title);
-      setContent(post.content);
-      setThumbnailUrl(post.thumbnailUrl);
-      setSelectedCategoryIds(post.postCategories.map((pc) => pc.category.id));
-    }
-  }, [post]);
-
-  // カテゴリーのトグル処理
-  const toggleCategory = (categoryId: number) => {
-    setSelectedCategoryIds((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
-
   // 更新処理
-  const handleUpdate = async () => {
-    if (!title.trim()) return alert("タイトルを入力してください");
-    if (!window.confirm("この記事を更新してもよろしいですか？")) {
-      return;
-    }
-    const result = await updatePost({
-      title,
-      content,
-      thumbnailUrl,
-      categoryIds: selectedCategoryIds,
-    });
+  const handleUpdate = async (data: PostMutationPayload) => {
+    if (!window.confirm("この記事を更新してもよろしいですか？")) return;
+    const result = await updatePost(data);
     if (result.success) {
       setToastMessage('記事を更新しました');
       setShowToast(true);
-      router.refresh(); 
+      router.refresh();
+      mutate();
       setTimeout(() => {
         setShowToast(false);
       }, 3000);
@@ -67,9 +37,7 @@ export default function AdminEditPage() {
 
   // 削除処理
   const handleDelete = async () => {
-    if (!window.confirm("この記事を削除してもよろしいですか？\nこの操作は取り消せません。")) {
-      return;
-    }
+    if (!window.confirm("この記事を削除してもよろしいですか？\nこの操作は取り消せません。")) return;
     const result = await deletePost();
     if (result.success) {
       setToastMessage('記事を削除しました');
@@ -99,14 +67,12 @@ export default function AdminEditPage() {
 
       <PostForm
         mode="edit"
-        title={title}
-        setTitle={setTitle}
-        content={content}
-        setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
-        selectedCategoryIds={selectedCategoryIds}
-        toggleCategory={toggleCategory}
+        defaultValues={{
+          title: post.title,
+          content: post.content,
+          thumbnailImageKey: post.thumbnailImageKey,
+          categoryIds: post.postCategories.map((pc) => pc.category.id),
+        }}
         onSubmit={handleUpdate}
         onDelete={handleDelete}
         isLoading={isUpdating}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import classes from '@/app/admin/_styles/AdminEdit.module.scss';
 import { CategoryForm } from '@/app/admin/_components/CategoryForm';
 import { useParams, useRouter } from 'next/navigation';
@@ -9,29 +9,23 @@ import { useGetCategory, useUpdateCategory, useDeleteCategory } from '@/app/admi
 export default function CategoryEditPage() {
   // 画面表示用フック
   const router = useRouter();
-  const [name, setName] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   // カテゴリー情報操作用フック
   const { id } = useParams<{ id: string }>();
-  const { category, fetched } = useGetCategory(id);
+  const { category, fetched, mutate } = useGetCategory(id);
   const { updateCategory, isUpdating } = useUpdateCategory(id);
   const { deleteCategory } = useDeleteCategory(id);
 
-  // 初期値セット
-  useEffect(() => {
-    if (category) setName(category.name);
-  }, [category]);
-
   // 更新処理
-  const handleUpdate = async () => {
-    if (!name.trim()) return alert("カテゴリー名を入力してください");
+  const handleUpdate = async (data: { name: string }) => {
     if (!window.confirm("このカテゴリー名を変更してもよろしいですか？")) return;
-    const result = await updateCategory({ name });
+    const result = await updateCategory(data);
     if (result.success) {
       setToastMessage('カテゴリーを更新しました');
       setShowToast(true);
       router.refresh();
+      mutate();
       setTimeout(() => setShowToast(false), 3000);
     } else {
       alert(`エラー: ${result.error}`);
@@ -40,9 +34,7 @@ export default function CategoryEditPage() {
 
   // 削除処理
   const handleDelete = async () => {
-    if (!window.confirm("このカテゴリーを削除してもよろしいですか？\nこの操作は取り消せません。")) {
-      return;
-    }
+    if (!window.confirm("このカテゴリーを削除してもよろしいですか？\nこの操作は取り消せません。")) return;
     const result = await deleteCategory();
     if (result.success) {
       setToastMessage('カテゴリーを削除しました');
@@ -69,8 +61,7 @@ export default function CategoryEditPage() {
 
       <CategoryForm 
         mode="edit"
-        name={name}
-        setName={setName}
+        defaultValues={category ? { name: category.name } : undefined}
         onSubmit={handleUpdate}
         onDelete={handleDelete}
         isLoading={isUpdating}

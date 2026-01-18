@@ -1,2 +1,2 @@
 export * from './Contact'
-export * from './UserSchemaType'
+export * from './ContactUserSchemaType'

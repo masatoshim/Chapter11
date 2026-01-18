@@ -12,37 +12,22 @@ export default function AdminCreatePage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   // 記事情報操作用フック
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   const { createPost, isCreating } = useCreatePost();
 
-  // カテゴリーのトグル処理
-  const toggleCategory = (categoryId: number) => {
-    setSelectedCategoryIds((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
-
   // 登録処理
-  const handleCreate = async () => {
-    if (!title.trim()) return alert("タイトルを入力してください");
+  const handleCreate = async (data: {
+    title: string;
+    content: string;
+    thumbnailImageKey: string;
+    categoryIds: number[];
+  }) => {
     if (!window.confirm("この記事を公開してもよろしいですか？")) return;
-    const result = await createPost({
-      title,
-      content,
-      thumbnailUrl,
-      categoryIds: selectedCategoryIds,
-    });
+    const result = await createPost(data);
     if (result.success) {
       setToastMessage('記事を作成しました');
       setShowToast(true);
       setTimeout(() => {
         router.push('/admin/posts');
-        router.refresh();
       }, 1500);
     } else {
       alert(`作成に失敗しました: ${result.error}`);
@@ -59,14 +44,12 @@ export default function AdminCreatePage() {
 
       <PostForm
         mode="create"
-        title={title}
-        setTitle={setTitle}
-        content={content}
-        setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
-        selectedCategoryIds={selectedCategoryIds}
-        toggleCategory={toggleCategory}
+        defaultValues={{
+          title: '',
+          content: '',
+          thumbnailImageKey: '',
+          categoryIds: []
+        }}
         onSubmit={handleCreate}
         isLoading={isCreating}
       />
