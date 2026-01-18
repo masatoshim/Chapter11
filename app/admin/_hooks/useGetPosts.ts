@@ -6,14 +6,15 @@ import { useSupabaseSession } from '@/app/_hooks';
 export const useGetPosts = () => {
   const { token } = useSupabaseSession();
 
-  const { data, error, isLoading } = useSWR<PostsIndexResponse>(
-    token ? [token] : null,
-    ([token]: [string]) => fetchAdminPosts(token)
+  const { data, error, isLoading, mutate } = useSWR<PostsIndexResponse>(
+    token ? ['admin-posts', token] : null,
+    ([_, token]: [string, string]) => fetchAdminPosts(token)
   );
 
   return {
     posts: data?.posts ?? [],
     fetched: !isLoading,
     error: error?.message ?? '',
+    mutate,
   };
 };

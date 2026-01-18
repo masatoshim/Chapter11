@@ -21,9 +21,9 @@ export const useUpdateCategory = (id: string) => {
     try {
       await updateAdminCategory(id, payload, token);
       // 一覧のキャッシュを更新
-      mutate([token]); 
+      mutate(['admin-categories', token]); 
       // 詳細のキャッシュを更新
-      mutate([id, token]); 
+      mutate(['admin-category', id, token]); 
       return { success: true };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'NG';

@@ -21,7 +21,7 @@ export const useCreatePost = () => {
     try {
       await createAdminPost(payload, token);
       // キャッシュを再取得
-      mutate([token]); 
+      mutate(['admin-post', token]); 
       return { success: true };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'NG';

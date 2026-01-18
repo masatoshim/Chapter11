@@ -20,7 +20,7 @@ export const useDeletePost = (id: string) => {
     try {
       await deleteAdminPost(id, token);
       // キャッシュを再取得
-      mutate([token]); 
+      mutate(['admin-posts', token]); 
       return { success: true };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'NG';

@@ -21,9 +21,9 @@ export const useUpdatePost = (id: string) => {
     try {
       await updateAdminPost(id, payload, token);
       // 一覧のキャッシュを更新
-      mutate([token]); 
+      mutate(['admin-posts', token]); 
       // 詳細のキャッシュを更新
-      mutate([id, token]); 
+      mutate(['admin-post', id, token]);
       return { success: true };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'NG';

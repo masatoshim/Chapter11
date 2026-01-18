@@ -6,14 +6,15 @@ import { useSupabaseSession } from '@/app/_hooks';
 export const useGetCategories = () => {
   const { token } = useSupabaseSession();
 
-  const { data, error, isLoading } = useSWR<CategoriesIndexResponse>(
-    token ? [token] : null,
-    ([token]) => fetchAdminCategories(token)
+  const { data, error, isLoading, mutate } = useSWR<CategoriesIndexResponse>(
+    token ? ['admin-categories', token] : null, 
+    ([_, token]:[string, string]) => fetchAdminCategories(token) 
   );
 
   return {
     categories: data?.categories ?? [],
     fetched: !isLoading,
     error: (error?.message as string) ?? '',
+    mutate,
   };
 };

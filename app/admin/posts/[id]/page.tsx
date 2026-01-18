@@ -14,7 +14,7 @@ export default function AdminEditPage() {
   const [toastMessage, setToastMessage] = useState('');
 
   // 記事情報操作用フック
-  const { post, fetched: postFetched, error: postError } = useGetPost(id);
+  const { post, fetched: postFetched, error: postError, mutate } = useGetPost(id);
   const { updatePost, isUpdating } = useUpdatePost(id);
   const { deletePost } = useDeletePost(id);
 
@@ -28,7 +28,8 @@ export default function AdminEditPage() {
     if (result.success) {
       setToastMessage('記事を更新しました');
       setShowToast(true);
-      router.refresh(); 
+      router.refresh();
+      mutate();
       setTimeout(() => {
         setShowToast(false);
       }, 3000);

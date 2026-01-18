@@ -20,7 +20,7 @@ export const useDeleteCategory = (id: string) => {
     try {
       await deleteAdminCategory(id, token);
       // キャッシュを再取得
-      mutate([token]); 
+      mutate(['admin-categories', token]); 
       return { success: true };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'NG';
