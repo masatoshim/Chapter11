@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import classes from '@/app/admin/_styles/AdminEdit.module.scss';
 import { CategoryForm } from '@/app/admin/_components/CategoryForm';
 import { useParams, useRouter } from 'next/navigation';
