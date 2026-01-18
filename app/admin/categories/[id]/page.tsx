@@ -34,9 +34,7 @@ export default function CategoryEditPage() {
 
   // 削除処理
   const handleDelete = async () => {
-    if (!window.confirm("このカテゴリーを削除してもよろしいですか？\nこの操作は取り消せません。")) {
-      return;
-    }
+    if (!window.confirm("このカテゴリーを削除してもよろしいですか？\nこの操作は取り消せません。")) return;
     const result = await deleteCategory();
     if (result.success) {
       setToastMessage('カテゴリーを削除しました');

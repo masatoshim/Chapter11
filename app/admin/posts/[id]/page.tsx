@@ -8,23 +8,20 @@ import { useGetPost, useUpdatePost, useDeletePost } from '@/app/admin/_hooks';
 import { PostMutationPayload } from '@/app/_types';
 
 export default function AdminEditPage() {
+  // 画面表示用フック
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-
   // 記事情報操作用フック
   const { post, fetched: postFetched, error: postError, mutate } = useGetPost(id);
   const { updatePost, isUpdating } = useUpdatePost(id);
   const { deletePost } = useDeletePost(id);
 
+  // 更新処理
   const handleUpdate = async (data: PostMutationPayload) => {
-    if (!window.confirm("この記事を更新してもよろしいですか？")) {
-      return;
-    }
-
+    if (!window.confirm("この記事を更新してもよろしいですか？")) return;
     const result = await updatePost(data);
-
     if (result.success) {
       setToastMessage('記事を更新しました');
       setShowToast(true);
@@ -38,10 +35,9 @@ export default function AdminEditPage() {
     }
   };
 
+  // 削除処理
   const handleDelete = async () => {
-    if (!window.confirm("この記事を削除してもよろしいですか？\nこの操作は取り消せません。")) {
-      return;
-    }
+    if (!window.confirm("この記事を削除してもよろしいですか？\nこの操作は取り消せません。")) return;
     const result = await deletePost();
     if (result.success) {
       setToastMessage('記事を削除しました');

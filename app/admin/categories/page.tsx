@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useGetCategories } from '@/app/admin/_hooks';
 
 export default function CategoryListPage() {
+  // カテゴリー情報操作用フック
   const { categories, fetched, error } = useGetCategories();
 
   if (!fetched) return <div>読み込み中...</div>;

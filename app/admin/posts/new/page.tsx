@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 import { useCreatePost } from '@/app/admin/_hooks';
 
 export default function AdminCreatePage() {
+  // 画面表示用フック
   const router = useRouter();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  
+  // 記事情報操作用フック
   const { createPost, isCreating } = useCreatePost();
 
+  // 登録処理
   const handleCreate = async (data: {
     title: string;
     content: string;
@@ -20,9 +22,7 @@ export default function AdminCreatePage() {
     categoryIds: number[];
   }) => {
     if (!window.confirm("この記事を公開してもよろしいですか？")) return;
-
     const result = await createPost(data);
-
     if (result.success) {
       setToastMessage('記事を作成しました');
       setShowToast(true);
